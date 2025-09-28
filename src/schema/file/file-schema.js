@@ -5,17 +5,24 @@ const fileSchema = gql`
     id: ID!
     name: String!
     url: String!
-    templateId: ID
+    isTemplate: Boolean!
+    type: Type!
+
+    ocrField: [OCRField!]
+    ocr: [OCR!]
+
     createdAt: String
   }
 
   extend type Query {
-    files: [File!]!
-    fileById(id: ID!): File
+    file: [File!]!
+    files(id: ID!): File!
+    fileTemplate: [File!]!
+    fileTemplateId(id: ID!): File!
   }
 
   extend type Mutation {
-    uploadFile(name: String!, url: String!, templateId: ID): File
+    uploadFile(name: String!, url: String!, isTemplate: Boolean!, typeId: ID!): File!
   }
 `;
 

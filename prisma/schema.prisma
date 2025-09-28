@@ -6,3 +6,52 @@ datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
 }
+
+model File {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  url        String
+  isTemplate Boolean @default(false)
+
+  typeId String @db.ObjectId
+  type   Type   @relation(fields: [typeId], references: [id])
+
+  ocrFields OCRFields[]
+
+  ocr OCR[]
+
+  // fields    Json?
+  createdAt DateTime @default(now())
+}
+
+model Type {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  files     File[]
+  createdAt DateTime @default(now())
+}
+
+model OCRFields {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  fieldName String
+  x         Int
+  y         Int
+  width     Int
+  height    Int
+
+  fileId String @db.ObjectId
+  file   File   @relation(fields: [fileId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model OCR {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  // fieldName String
+
+  fileId String @db.ObjectId
+  file   File   @relation(fields: [fileId], references: [id])
+
+  data      Json
+  createdAt DateTime @default(now())
+}

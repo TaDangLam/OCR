@@ -1,11 +1,13 @@
 import { mergeResolvers } from "@graphql-tools/merge";
 
-// import bookResolvers from "./book/book-resolver.js";
-// import authorReolvers from "./author/author-resolver.js";
+import { typeResolvers } from './type/type-resolver.js';
+import { ocrResolvers } from './ocr/ocr-resolver.js';
+import { fileResolvers } from './file/file-resolver.js';
 
 const resolvers = mergeResolvers([
-    // bookResolvers,
-    // authorReolvers
+    typeResolvers,
+    ocrResolvers,
+    fileResolvers
 ])
 
 export default resolvers;
