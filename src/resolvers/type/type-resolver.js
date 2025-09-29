@@ -1,4 +1,4 @@
-import typeService from '';
+import typeService from './../../service/type/type-service.js';
 
 const typeResolvers = {
     Query: {
