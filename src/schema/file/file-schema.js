@@ -1,6 +1,8 @@
 import gql from "./../../libs/graphql-tag.js";
 
 const fileSchema = gql`
+  scalar Upload
+
   type File {
     id: ID!
     name: String!
@@ -22,7 +24,7 @@ const fileSchema = gql`
   }
 
   extend type Mutation {
-    uploadFile(name: String!, url: String!, isTemplate: Boolean!, typeId: ID!): File!
+    uploadFile(file: Upload!, name: String!, url: String!, isTemplate: Boolean!, typeId: ID!): File!
   }
 `;
 

@@ -1,5 +1,6 @@
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
+import graphqlUploadExpress from "graphql-upload/graphqlUploadExpress.mjs";
 import { connectDB } from "./src/libs/prisma.js";
 
 // Load schema & resolvers
@@ -10,6 +11,8 @@ const startServer = async () => {
     await connectDB();
 
     const app = express();
+    app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
+    
     const server = new ApolloServer({ typeDefs, resolvers });
     await server.start();               // cần gọi start() trước khi applyMiddleware
     server.applyMiddleware({ app });    // gắn vào app với route /graphql
