@@ -27,6 +27,7 @@ model File {
 model Type {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
+  isDelete  Boolean  @default(false)
   files     File[]
   createdAt DateTime @default(now())
 }
