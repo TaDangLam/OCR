@@ -8,13 +8,20 @@ const typeSchema = gql`
     file: [File!]!
     createdAt: String
   }
+  
+  type DeleteResponse {
+    success: String!
+    message: String!
+  }
 
   extend type Query {
-    getAllType: [Type!]!
+    Types: [Type!]!
   }
 
   extend type Mutation {
     createType(name: String!): Type!
+    updateType(id: ID!, name: String!): Type!
+    deleteType(id: ID!): DeleteResponse
   }
 `;
 
