@@ -1,3 +1,4 @@
+import cloudinary from '../../libs/cloudinary.js';
 import prisma from './../../libs/prisma.js';
 
 const fileService = {
@@ -62,7 +63,7 @@ const fileService = {
             throw new Error("Failed to fetch template by id!");
         }
     },
-    uploadFile: async (file, name, isTemplate, typeId) => {
+    uploadFileLocal: async (file, name, isTemplate, typeId) => {
         try {
             const { createReadStream, filename } = await file;
 
@@ -92,7 +93,52 @@ const fileService = {
             return newFile;
         } catch (err) {
             console.error(err);
-            throw new Error("Failed to upload file!");
+            throw new Error("Failed to upload local file!");
+        }
+    },
+    uploadFileCloud: async (file, name, isTemplate, typeId) => {
+        try {
+            const { createReadStream, filename, mimetype } = await file;
+
+            // 1. Kiểm tra type tồn tại
+            const existType = await prisma.type.findUnique({ where: { id: typeId } });
+            if (!existType) {
+                throw new Error("Type not exist!");
+            }
+
+            // 2. Upload stream lên Cloudinary
+            const stream = createReadStream();
+            const uploadResult = await new Promise((resolve, reject) => {
+                const cloudStream = cloudinary.uploader.upload_stream(
+                    { folder: "ocr-files" },
+                    (err, result) => {
+                        if (err) reject(err);
+                        else {
+                            resolve(result);
+                            console.log('result: ', result);
+                        }
+                    }
+                );
+                stream.pipe(cloudStream);
+            });
+            console.log('uploadResult: ', uploadResult);
+            if (!uploadResult || !uploadResult.secure_url) {
+                throw new Error("Cloudinary upload failed!");
+            }
+
+            // 3. Lưu metadata vào DB
+            const newFile = await prisma.file.create({
+                data: {
+                    name,
+                    url: uploadResult.secure_url,
+                    isTemplate,
+                    typeId,
+                },
+            });
+
+            return newFile;
+        } catch (err) {
+            throw new Error("Failed to upload cloudinary file!");
         }
     },
 };

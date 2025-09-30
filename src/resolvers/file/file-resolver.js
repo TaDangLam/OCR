@@ -8,7 +8,8 @@ const fileResolvers = {
        fileTemplateId: async(_, { id }) => await fileService.getTemplateId(id),
     },
     Mutation: {
-        uploadFile: async(_, { file, name, isTemplate, typeId }) => await fileService.uploadFile(file, name, isTemplate, typeId),
+        uploadFileLocal: async(_, { file, name, isTemplate, typeId }) => await fileService.uploadFileLocal(file, name, isTemplate, typeId),
+        uploadFileCloud: async(_, { file, name, isTemplate, typeId }) => await fileService.uploadFileCloud(file, name, isTemplate, typeId),
     }
 }
 
