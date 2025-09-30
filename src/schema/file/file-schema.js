@@ -24,7 +24,8 @@ const fileSchema = gql`
   }
 
   extend type Mutation {
-    uploadFile(file: Upload!, name: String!, url: String!, isTemplate: Boolean!, typeId: ID!): File!
+    uploadFileLocal(file: Upload!, name: String!, url: String!, isTemplate: Boolean!, typeId: ID!): File!
+    uploadFileCloud(file: Upload!, name: String!, url: String!, isTemplate: Boolean!, typeId: ID!): File!
   }
 `;
 
