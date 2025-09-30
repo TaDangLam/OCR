@@ -5,6 +5,7 @@ const typeSchema = gql`
   type Type {
     id: ID!
     name: String!
+    isDelete: Boolean!
     file: [File!]!
     createdAt: String
   }
