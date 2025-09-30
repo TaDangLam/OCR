@@ -11,7 +11,7 @@ const startServer = async () => {
     await connectDB();
 
     const app = express();
-    app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
+    app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 100 }));
     
     const server = new ApolloServer({ typeDefs, resolvers });
     await server.start();               // cần gọi start() trước khi applyMiddleware
