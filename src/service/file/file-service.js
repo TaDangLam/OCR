@@ -96,9 +96,9 @@ const fileService = {
             throw new Error("Failed to upload local file!");
         }
     },
-    uploadFileCloud: async (file, name, isTemplate, typeId) => {
+    uploadFileCloud: async (file, name, isTemplate, typeId, userId) => {
         try {
-            const { createReadStream, filename, mimetype } = await file;
+            const { createReadStream } = await file.file;
 
             // 1. Kiểm tra type tồn tại
             const existType = await prisma.type.findUnique({ where: { id: typeId } });
@@ -115,17 +115,16 @@ const fileService = {
                         if (err) reject(err);
                         else {
                             resolve(result);
-                            console.log('result: ', result);
                         }
                     }
                 );
                 stream.pipe(cloudStream);
             });
-            console.log('uploadResult: ', uploadResult);
+            // console.log('uploadResult: ', uploadResult);
             if (!uploadResult || !uploadResult.secure_url) {
                 throw new Error("Cloudinary upload failed!");
             }
-
+            // console.log('uploadResult: ', uploadResult)
             // 3. Lưu metadata vào DB
             const newFile = await prisma.file.create({
                 data: {
@@ -133,12 +132,13 @@ const fileService = {
                     url: uploadResult.secure_url,
                     isTemplate,
                     typeId,
+                    userId
                 },
             });
-
+            // console.log('newFile: ', newFile)
             return newFile;
         } catch (err) {
-            throw new Error("Failed to upload cloudinary file!");
+            throw new Error(err.message);
         }
     },
 };
