@@ -9,7 +9,7 @@ const fileResolvers = {
     },
     Mutation: {
         uploadFileLocal: async(_, { file, name, isTemplate, typeId }) => await fileService.uploadFileLocal(file, name, isTemplate, typeId),
-        uploadFileCloud: async(_, { file, name, isTemplate, typeId }) => await fileService.uploadFileCloud(file, name, isTemplate, typeId),
+        uploadFileCloud: async(_, { file, name, isTemplate, typeId, userId }) => await fileService.uploadFileCloud(file, name, isTemplate, typeId, userId),
     }
 }
 

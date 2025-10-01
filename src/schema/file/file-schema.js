@@ -9,7 +9,7 @@ const fileSchema = gql`
     url: String!
     isTemplate: Boolean!
     type: Type!
-
+    user: User!
     ocrField: [OCRField!]
     ocr: [OCR!]
 
@@ -24,8 +24,8 @@ const fileSchema = gql`
   }
 
   extend type Mutation {
-    uploadFileLocal(file: Upload!, name: String!, url: String!, isTemplate: Boolean!, typeId: ID!): File!
-    uploadFileCloud(file: Upload!, name: String!, url: String!, isTemplate: Boolean!, typeId: ID!): File!
+    uploadFileLocal(file: Upload!, name: String!, isTemplate: Boolean!, typeId: ID!): File!
+    uploadFileCloud(file: Upload!, name: String!, isTemplate: Boolean!, typeId: ID!, userId: ID!): File!
   }
 `;
 
