@@ -1,13 +1,14 @@
 import prisma from './../../libs/prisma.js';
+import { typeInclude } from './../../constant/constant.js';
 
 const typeService = {
     getAllType: async () => {
         try {
-            const Types = await prisma.type.findMany();
+            const Types = await prisma.type.findMany({ include: typeInclude });
             return Types;
         } catch (err) {
-            console.error(err);
-            throw new Error("Failed to fetch types!");
+            console.error(err.message);
+            throw new Error(err.message);
         }
     },
     createType: async(name) => {
@@ -17,8 +18,8 @@ const typeService = {
             });
             return newType;
         } catch (err) {
-            console.error(err);
-            throw new Error("Failed to add type!");
+            console.error(err.message);
+            throw new Error(err.message);
         }    
     },
     updateType: async(id, name) => {
@@ -33,8 +34,8 @@ const typeService = {
             });
             return updateType;
         } catch (err) {
-            console.error(err);
-            throw new Error("Failed to update types!");
+            console.error(err.message);
+            throw new Error(err.message);
         }
     },
     deleteType: async(id) => {
@@ -52,8 +53,8 @@ const typeService = {
                 messsage: "Delete is Successfully!"
             }
         } catch (err) {
-            console.error(err);
-            throw new Error("Failed to update types!");
+            console.error(err.message);
+            throw new Error(err.message);
         }
     },
 };
