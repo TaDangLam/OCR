@@ -1,16 +1,18 @@
 import cloudinary from '../../libs/cloudinary.js';
 import prisma from './../../libs/prisma.js';
+import { fileInclude } from '../../constant/constant.js';
 
 const fileService = {
     getAllFile: async() => {
         try {
             const files = await prisma.file.findMany({
+                include: fileInclude,
                 where: { isTemplate: false }
             });
             return files;
         } catch (err) {
-            console.error(err);
-            throw new Error("Failed to fetch all files!");
+            console.error(err.message);
+            throw new Error(err.message);
         }
     },
     getFileById: async(id) => {
@@ -20,6 +22,7 @@ const fileService = {
                 throw new Error("file is not exist!");
             }
             const file = await prisma.file.findUnique({
+                include: fileInclude,
                 where: {
                     id,
                     isTemplate: false
@@ -27,22 +30,25 @@ const fileService = {
             });
             return file;
         } catch (err) {
-            console.error(err);
-            throw new Error("Failed to fetch file by id!");
+            console.error(err.message);
+            throw new Error(err.message);
         }
     },
     getAllTemplate: async() => {
         try {
-            const filesTemplate = await prisma.file.findMany({ where: { isTemplate: true }});
+            const filesTemplate = await prisma.file.findMany({
+                include: fileInclude,
+                where: { isTemplate: true }
+            });
             return filesTemplate;
         } catch (err) {
-            console.error(err);
-            throw new Error("Failed to fetch all template!");
+            console.error(err.message);
+            throw new Error(err.message);
         }
     },
     getTemplateId: async(id) => {
         try {
-            const existFileTemplate = await prisma.file.findUnique({ 
+            const existFileTemplate = await prisma.file.findUnique({
                 where: { 
                     id,
                     isTemplate: true
@@ -52,6 +58,7 @@ const fileService = {
                 throw new Error("file template is not exist!");
             }
             const fileTemplate = await prisma.file.findUnique({
+                include: fileInclude,
                 where: {
                     id,
                     isTemplate: true
@@ -59,8 +66,8 @@ const fileService = {
             });
             return fileTemplate;
         } catch (err) {
-            console.error(err);
-            throw new Error("Failed to fetch template by id!");
+            console.error(err.message);
+            throw new Error(err.message);
         }
     },
     uploadFileLocal: async (file, name, isTemplate, typeId) => {
@@ -92,8 +99,8 @@ const fileService = {
 
             return newFile;
         } catch (err) {
-            console.error(err);
-            throw new Error("Failed to upload local file!");
+            console.error(err.message);
+            throw new Error(err.message);
         }
     },
     uploadFileCloud: async (file, name, isTemplate, typeId, userId) => {
@@ -138,6 +145,7 @@ const fileService = {
             // console.log('newFile: ', newFile)
             return newFile;
         } catch (err) {
+            console.error(err.message);
             throw new Error(err.message);
         }
     },
