@@ -6,7 +6,7 @@ export const fileInclude = {
 }
 
 export const userInclude = {
-
+    files: true,
 }
 
 export const typeInclude = {

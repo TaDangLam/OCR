@@ -1,10 +1,11 @@
 import prisma from './../../libs/prisma.js';
 import bcrypt from '../../libs/bcrypt.js';
+import { userInclude } from '../../constant/constant.js';
 
 const userService = {
     getAllUser: async () => {
         try {
-            const Users = await prisma.user.findMany();
+            const Users = await prisma.user.findMany({ include: userInclude });
             return Users;
         } catch (err) {
             console.error(err);
@@ -13,7 +14,10 @@ const userService = {
     },
     getUserId: async (id) => {
         try {
-            const User = await prisma.user.findUnique({ where: { id }});
+            const User = await prisma.user.findUnique({
+                include: userInclude,
+                where: { id }
+            });
             return User;
         } catch (err) {
             console.error(err);
