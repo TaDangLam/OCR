@@ -7,7 +7,7 @@ const userSchema = gql`
     email: String!
     password: String!
     isAdmin: Boolean!
-    file: [File!]!
+    files: [File!]
     createdAt: String
   }
   
