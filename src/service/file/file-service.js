@@ -70,6 +70,18 @@ const fileService = {
             throw new Error(err.message);
         }
     },
+    getAllFileChildrenByTemplate: async(templateId) => {
+        try {
+            const children = await prisma.file.findMany({
+                include: fileInclude,
+                where: { templateId }
+            });
+            return children;
+        } catch (err) {
+            console.error(err.message);
+            throw new Error(err.message);
+        }
+    },
     uploadFileLocal: async (file, name, isTemplate, typeId) => {
         try {
             const { createReadStream, filename } = await file;
