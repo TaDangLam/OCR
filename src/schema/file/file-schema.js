@@ -8,9 +8,11 @@ const fileSchema = gql`
     name: String!
     url: String!
     isTemplate: Boolean!
+    template: File
+    children: [File!]
     type: Type
     user: User
-    ocrField: [OCRField!]
+    ocrFields: [OCRFields!]
     ocr: [OCR!]
 
     createdAt: String
@@ -19,6 +21,7 @@ const fileSchema = gql`
   extend type Query {
     files: [File!]!
     file(id: ID!): File!
+    fileChildrenByTemplate(templateId: ID!): [File!]!
     fileTemplate: [File!]!
     fileTemplateId(id: ID!): File!
   }

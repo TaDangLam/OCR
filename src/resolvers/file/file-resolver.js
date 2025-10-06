@@ -4,6 +4,7 @@ const fileResolvers = {
     Query: {
        files: async() => await fileService.getAllFile(),
        file: async(_, { id }) => await fileService.getFileById(id),
+       fileChildrenByTemplate: async(_, { templateId }) => await fileService.getAllFileChildrenByTemplate(templateId),
        fileTemplate: async() => await fileService.getAllTemplate(),
        fileTemplateId: async(_, { id }) => await fileService.getTemplateId(id),
     },
