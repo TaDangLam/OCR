@@ -2,7 +2,9 @@ export const fileInclude = {
     type: true,
     user: true,
     ocrFields: true,
-    ocr: true
+    ocr: true,
+    template: true,
+    children: true
 }
 
 export const userInclude = {
@@ -13,6 +15,10 @@ export const typeInclude = {
     files: true,
 }
 
-export const ocrInclude = {
+export const ocrFieldsInclude = {
+    file: true,
+}
 
+export const ocrInclude = {
+    file: true,
 }
