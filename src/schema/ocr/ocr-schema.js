@@ -3,7 +3,7 @@ import gql from "./../../libs/graphql-tag.js";
 const ocrSchema = gql`
   scalar Json
 
-  type OCRField {
+  type OCRFields {
     id: ID!
     fieldName: String!
     x: Int!
@@ -22,17 +22,26 @@ const ocrSchema = gql`
   }
 
   extend type Query {
-    ocrFields(fileId: ID!): [OCRField!]!
-    ocr(fieldId: ID!): OCR!
+    ocrFieldsTemplate(fileId: ID!): [OCRFields!]!                     # lấy toàn bộ field của 1 template
+    
+    ocrFile(fileId: ID!): OCR                                         # lấy kết quả OCR của 1 file con
+    # ocr(fileId: ID!): OCR!
+    ocrResultsByTemplate(templateId: ID!): [OCR!]!                    # lấy kết quả OCR của toàn bộ file con theo 1 template
   }
 
   extend type Mutation {
-    createOCRField(fileId: ID!, fieldName: String!, x: Int!, y: Int!, width: Int!, height: Int!): OCRField!
-    updateOCRField(id: ID!, fieldName: String, x: Int, y: Int, width: Int, height: Int): OCRField!
+    createOCRField(fileId: ID!, fieldName: String!, x: Int!, y: Int!, width: Int!, height: Int!): OCRFields!
+    updateOCRField(id: ID!, fieldName: String, x: Int, y: Int, width: Int, height: Int): OCRFields!
     deleteOCRField(id: ID!): Boolean!
     
-    createOCR(fileId: ID!, data: Json!): OCR!
-    runOCR(fileId: ID!): Json!
+    uploadFiles(templateId: ID!, userId: ID!, files: [Upload!]!): [File!]!          # Bulk upload file con
+    createOCR(fileId: ID!): OCR!
+    runOCR(fileId: ID!): [OCRResultRow!]!                             # chạy OCR cho toàn bộ file con theo template
+  }
+
+  type OCRResultRow { 
+    file: File! 
+    values: Json! 
   }
 `;
 
