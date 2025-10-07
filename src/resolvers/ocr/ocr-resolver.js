@@ -8,6 +8,7 @@ const ocrResolvers = {
     },
     Mutation: {
         createOCRField: async(_, { fileId, fieldName, x, y, width, height }) => await ocrService.createOCRField(fileId, fieldName, x, y, width, height),
+        createManyOCRField: async(_, { fileId, fields }) => await ocrService.createManyOCRField(fileId, fields),
         updateOCRField: async(_, { id, fieldName, x, y, width, height }) => await ocrService.updateOCRField(id, fieldName, x, y, width, height),
         deleteOCRField: async(_, { id }) => await ocrService.deleteOCRField(id),
         uploadFiles: async(_, { templateId, userId, files }) => await ocrService.uploadFiles(templateId, userId, files),

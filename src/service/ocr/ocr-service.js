@@ -77,6 +77,27 @@ const ocrService = {
             throw new Error(err.message);
         }
     },
+    createManyOCRField: async(fileId, fields) => {
+        try {
+            const ocrFields = await Promise.all(
+                fields.map(field => prisma.oCRFields.create({
+                    data: {
+                        fileId,
+                        fieldName: field.fieldName,
+                        x: field.x,
+                        y: field.y,
+                        width: field.width,
+                        height: field.height,
+                    },
+                    include: ocrFieldsInclude
+                }))
+            );
+            return ocrFields;
+        } catch (err) {
+            console.error(err.message);
+            throw new Error(err.message);
+        }
+    },
     updateOCRField: async(id, fieldName, x, y, width, height) => {
         try {
             const updateOcrField = await prisma.oCRFields.update({
