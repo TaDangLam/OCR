@@ -13,7 +13,12 @@ const startServer = async () => {
     const app = express();
     app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 100 }));
     
-    const server = new ApolloServer({ typeDefs, resolvers });
+    const server = new ApolloServer({ 
+        typeDefs, 
+        resolvers,
+        introspection: true, 
+        persistedQueries: { cache: "bounded" }  // giới hạn bộ nhớ cache
+    });
     await server.start();               // cần gọi start() trước khi applyMiddleware
     server.applyMiddleware({ app });    // gắn vào app với route /graphql
 
