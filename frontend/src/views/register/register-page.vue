@@ -1,5 +1,5 @@
 <template >
-    <div  ng-if="currentPage.registerPage"  class="bg-[url('https://static9.depositphotos.com/1611805/1080/i/450/depositphotos_10808579-stock-illustration-abstract-painted-background.jpg')] bg-center bg-cover bg-no-repeat flex items-center justify-center min-h-screen">
+    <div  ng-if="currentPage.registerPage"  class="flex items-center justify-center min-h-screen">
         <div class="flex flex-col bg-slate-200 h-auto w-full max-w-xl shadow-2xl rounded-[25px] pt-6 pb-2 mx-2">
             <div class="flex flex-col items-center justify-center w-full gap-3 pt-2">
                 <div class="text-5xl font-bold text-[#005AA7]">Sign Up {{ abc }}</div>
