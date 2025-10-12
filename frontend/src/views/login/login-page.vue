@@ -1,5 +1,5 @@
 <template >
-     <div class="bg-[url('https://static9.depositphotos.com/1611805/1080/i/450/depositphotos_10808579-stock-illustration-abstract-painted-background.jpg')] bg-center bg-cover bg-no-repeat flex items-center justify-center min-h-screen">
+     <div class=" flex items-center justify-center min-h-screen">
         <div class="flex flex-col bg-slate-200 h-3/6 w-11/12 sm:w-3/6 md:w-2/5 lg:w-1/3 shadow-2xl rounded-[25px]">
             <div class="flex flex-col w-full h-5/6 rounded-t-[25px] p-5 ">
                 <div class="flex text-5xl font-bold items-center justify-center text-[#005AA7]">Login</div>
