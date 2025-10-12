@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginPage from '@/views/login/login-page.vue'
 import HomePage from '@/views/home/home-page.vue'
 import ProfilePage from '@/views/profile/profile-page.vue'
-import RegisterPage from '@/views/register/register-pate.vue'
+import RegisterPage from '@/views/register/register-page.vue'
 import TemplatePage from '@/views/template/template-page.vue'
 
 const router = createRouter({
