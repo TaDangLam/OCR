@@ -10,7 +10,13 @@ const userSchema = gql`
     files: [File!]
     createdAt: String
   }
-  
+    
+  type AuthPayload {
+    user: User!
+    accessToken: String!
+    refreshToken: String!
+  }
+
   extend type Query {
     Users: [User!]!
     User(id: ID!): User!
@@ -18,6 +24,7 @@ const userSchema = gql`
 
   extend type Mutation {
     register(name: String!, email: String!, password: String!): User!
+    login(email: String!, password: String!): AuthPayload
     updateUser(id: ID!, name: String!, email: String!, password: String!): User!
     deleteUser(id: ID!): DeleteResponse
   }

@@ -1,5 +1,6 @@
 import prisma from './../../libs/prisma.js';
 import bcrypt from '../../libs/bcrypt.js';
+import jwt from './../../libs/jwt.js';
 import { userInclude } from '../../constant/constant.js';
 
 const userService = {
@@ -39,6 +40,36 @@ const userService = {
                 }
             });
             return newUser;
+        } catch (err) {
+            console.error(err);
+            throw new Error(err.message);
+        }
+    },
+    login: async (email, password) => {
+        try {
+            const user = await prisma.user.findUnique({ where: { email }});
+            if(!user) {
+                throw new Error('Email is not exist!');
+            }
+            const comparePassword = bcrypt.compareSync(password, user.password);
+            if(!comparePassword) {
+                throw new Error('Password is not incorrect');
+            }
+            const accessToken = jwt.sign(
+                {id: user.id, email: user.email, isAdmin: user.isAdmin},
+                process.env.JWT_ACCESS_SECRET,
+                { expiresIn: '1d' }
+            );
+            const refreshToken = jwt.sign(
+                {id: user.id, email: user.email, isAdmin: user.isAdmin},
+                process.env.JWT_REFRESH_SECRET,
+                { expiresIn: '30d' }                
+            );
+            return {
+                user,
+                accessToken,
+                refreshToken
+            }       
         } catch (err) {
             console.error(err);
             throw new Error(err.message);
