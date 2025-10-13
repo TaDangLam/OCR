@@ -14,7 +14,10 @@ const startServer = async () => {
 
     const app = express();
     app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 100 }));
-    app.use(cors());
+    app.use(cors({
+        origin: ["http://localhost:5173"],
+        credentials: true,
+    }));
 
     const server = new ApolloServer({ 
         typeDefs, 
@@ -29,8 +32,8 @@ const startServer = async () => {
     });
     await server.start();               // cần gọi start() trước khi applyMiddleware
     server.applyMiddleware({ app });    // gắn vào app với route /graphql
-    app.listen(process.env.PORT, () => {
-        console.log(`Server is running on http://localhost:${process.env.PORT}/graphql`);
+    app.listen(4000, () => {
+        console.log(`Server is running on http://localhost:4000/graphql`);
     });
 }
 
