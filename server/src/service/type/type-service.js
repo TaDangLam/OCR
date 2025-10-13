@@ -50,7 +50,7 @@ const typeService = {
             });
             return {
                 success: "OK",
-                messsage: "Delete is Successfully!"
+                message: "Delete is Successfully!"
             }
         } catch (err) {
             console.error(err.message);

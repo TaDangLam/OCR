@@ -1,19 +1,20 @@
 import ocrService from './../../service/ocr/ocr-service.js';
+import { checkRoles } from "../../middlewares/checkRoles.js";
 
 const ocrResolvers = {
     Query: {
-        ocrFieldsTemplate: async(_, { fileId }) => await ocrService.ocrFieldsTemplate(fileId),
-        ocrFile: async(_, { fileId }) => await ocrService.ocrFile(fileId),
-        ocrResultsByTemplate: async(_, { templateId }) => await ocrService.ocrResultsByTemplate(templateId)
+        ocrFieldsTemplate: checkRoles(true, true)(async(_, { fileId }) => await ocrService.ocrFieldsTemplate(fileId)),
+        ocrFile: checkRoles(true, true)(async(_, { fileId }) => await ocrService.ocrFile(fileId)),
+        ocrResultsByTemplate: checkRoles(true, true)(async(_, { templateId }) => await ocrService.ocrResultsByTemplate(templateId)),
     },
     Mutation: {
-        createOCRField: async(_, { fileId, fieldName, x, y, width, height }) => await ocrService.createOCRField(fileId, fieldName, x, y, width, height),
-        createManyOCRField: async(_, { fileId, fields }) => await ocrService.createManyOCRField(fileId, fields),
-        updateOCRField: async(_, { id, fieldName, x, y, width, height }) => await ocrService.updateOCRField(id, fieldName, x, y, width, height),
-        deleteOCRField: async(_, { id }) => await ocrService.deleteOCRField(id),
-        uploadFiles: async(_, { templateId, userId, files }) => await ocrService.uploadFiles(templateId, userId, files),
-        createOCR: async(_, { fileId }) => await ocrService.createOCR(fileId),
-        runOCR: async(_, { fileId }) => await ocrService.runOCR(fileId),
+        createOCRField: checkRoles(true, true)(async(_, { fileId, fieldName, x, y, width, height }) => await ocrService.createOCRField(fileId, fieldName, x, y, width, height)),
+        createManyOCRField: checkRoles(true, true)(async(_, { fileId, fields }) => await ocrService.createManyOCRField(fileId, fields)),
+        updateOCRField: checkRoles(true, true)(async(_, { id, fieldName, x, y, width, height }) => await ocrService.updateOCRField(id, fieldName, x, y, width, height)),
+        deleteOCRField: checkRoles(true, true)(async(_, { id }) => await ocrService.deleteOCRField(id)),
+        uploadFiles: checkRoles(true, true)(async(_, { templateId, files }, context) => await ocrService.uploadFiles(templateId, context.user.id, files)),
+        createOCR: checkRoles(true, true)(async(_, { fileId }) => await ocrService.createOCR(fileId)),
+        runOCR: checkRoles(true, true)(async(_, { fileId }) => await ocrService.runOCR(fileId)),
     }
 }
 

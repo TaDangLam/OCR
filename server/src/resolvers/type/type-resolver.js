@@ -1,3 +1,4 @@
+import { checkRoles } from "../../middlewares/checkRoles.js";
 import typeService from './../../service/type/type-service.js';
 
 const typeResolvers = {
@@ -5,9 +6,9 @@ const typeResolvers = {
         Types: async() => await typeService.getAllType(),
     },
     Mutation: {
-        createType: async(_, { name }) => await typeService.createType(name),
-        updateType: async(_, { id, name }) => await typeService.updateType(id, name),
-        deleteType: async(_, { id }) => await typeService.deleteType(id),
+        createType: checkRoles(true, false)(async(_, { name }) => await typeService.createType(name)),
+        updateType: checkRoles(true, false)(async(_, { id, name }) => await typeService.updateType(id, name)),
+        deleteType: checkRoles(true, false)(async(_, { id }) => await typeService.deleteType(id)),
     }
 }
 
