@@ -24,8 +24,12 @@ const startServer = async () => {
         resolvers,
         introspection: true, 
         persistedQueries: { cache: "bounded" },  // giới hạn bộ nhớ cache
-        context: (obj) => {
-            const req = obj.req;
+        context: ({ req }) => {
+            // Nếu là introspection query -> bỏ qua authMiddleware
+            if (req.body?.operationName === "IntrospectionQuery") {
+                return {}; // không cần user, introspection sẽ chạy
+            }
+            // Còn lại thì chạy xác thực như bình thường
             const user = authMiddleware(req);
             return { user };
         }
