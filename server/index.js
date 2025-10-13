@@ -24,14 +24,25 @@ const startServer = async () => {
         resolvers,
         introspection: true, 
         persistedQueries: { cache: "bounded" },  // giới hạn bộ nhớ cache
-        context: ({ req }) => {
-            // Nếu là introspection query -> bỏ qua authMiddleware
-            if (req.body?.operationName === "IntrospectionQuery") {
-                return {}; // không cần user, introspection sẽ chạy
+        context: async ({ req }) => {
+            try {
+                // Nếu là introspection query hoặc request không có body
+                if (
+                    !req.body ||
+                    req.body.operationName === "IntrospectionQuery" ||
+                    req.body.query?.includes("__schema")
+                ) {
+                    return {}; // cho phép introspection
+                }
+
+                // Còn lại thì xác thực như bình thường
+                const user = authMiddleware(req);
+                return { user };
+            } catch (err) {
+                // Nếu có lỗi trong quá trình tạo context (vd: thiếu header)
+                console.warn("⚠️ Context creation skipped:", err.message);
+                return {}; // vẫn trả context rỗng, không crash
             }
-            // Còn lại thì chạy xác thực như bình thường
-            const user = authMiddleware(req);
-            return { user };
         }
     });
     await server.start();               // cần gọi start() trước khi applyMiddleware
