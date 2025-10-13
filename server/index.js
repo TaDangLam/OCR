@@ -14,10 +14,7 @@ const startServer = async () => {
 
     const app = express();
     app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 100 }));
-    app.use(cors({
-        origin: ["http://localhost:5173"],
-        credentials: true,
-    }));
+    app.use(cors());
 
     const server = new ApolloServer({ 
         typeDefs, 
