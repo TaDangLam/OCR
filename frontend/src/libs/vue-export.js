@@ -1,1 +1,1 @@
-export { ref, reactive, computed, watch, onMounted, onUnmounted, createApp } from 'vue'
+export { ref, createApp, watch, nextTick } from 'vue'
