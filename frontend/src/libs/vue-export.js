@@ -1,1 +1,1 @@
-export { ref, createApp, watch, nextTick } from 'vue'
+export { ref, createApp, watch, nextTick, provide } from 'vue'
