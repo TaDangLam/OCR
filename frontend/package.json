@@ -14,7 +14,10 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@apollo/client": "^3.14.0",
     "@tailwindcss/vite": "^4.1.14",
+    "@vue/apollo-composable": "^4.2.2",
+    "graphql": "^16.11.0",
     "pdfjs-dist": "^5.4.296",
     "pinia": "^3.0.3",
     "tailwindcss": "^4.1.14",
