@@ -23,12 +23,10 @@ model File {
   name       String
   url        String
   isTemplate Boolean @default(false)
+  typeName   String
   children   File[]  @relation("templateChildren")
   templateId String? @db.ObjectId
   template   File?   @relation("templateChildren", fields: [templateId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-
-  typeId String @db.ObjectId
-  type   Type   @relation(fields: [typeId], references: [id])
 
   ocrFields OCRFields[]
 
@@ -37,14 +35,6 @@ model File {
   userId String @db.ObjectId
   user   User   @relation(fields: [userId], references: [id])
 
-  createdAt DateTime @default(now())
-}
-
-model Type {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  isDelete  Boolean  @default(false)
-  files     File[]
   createdAt DateTime @default(now())
 }
 

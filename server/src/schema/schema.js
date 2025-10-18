@@ -3,7 +3,6 @@ import gql from "./../libs/graphql-tag.js";
 
 import fileSchema from "./file/file-schema.js";
 import ocrSchema from "./ocr/ocr-schema.js";
-import typeSchema from "./type/type-schema.js";
 import userSchema from "./user/user-schema.js";
 
 const typeDefs = mergeTypeDefs([
@@ -13,7 +12,6 @@ const typeDefs = mergeTypeDefs([
   `,
   fileSchema,
   ocrSchema,
-  typeSchema,
   userSchema
 ]);
 
