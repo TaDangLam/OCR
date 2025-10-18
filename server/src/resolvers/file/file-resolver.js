@@ -10,8 +10,8 @@ const fileResolvers = {
        fileTemplateId: checkRoles(true, true)(async(_, { id }) => await fileService.getTemplateId(id)),
     },
     Mutation: {
-        uploadFileLocal: checkRoles(true, true)(async(_, { file, name, isTemplate, typeId }) => await fileService.uploadFileLocal(file, name, isTemplate, typeId)),
-        uploadFileCloud: checkRoles(true, true)(async(_, { file, name, isTemplate, typeId, userId }) => await fileService.uploadFileCloud(file, name, isTemplate, typeId, userId)),
+        uploadFileLocal: checkRoles(true, true)(async(_, { file, name, isTemplate }) => await fileService.uploadFileLocal(file, name, isTemplate)),
+        uploadFileCloud: checkRoles(true, true)(async(_, { file, name, isTemplate, userId, typeName }) => await fileService.uploadFileCloud(file, name, isTemplate, userId, typeName)),
     }
 }
 

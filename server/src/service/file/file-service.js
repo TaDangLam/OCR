@@ -82,13 +82,13 @@ const fileService = {
             throw new Error(err.message);
         }
     },
-    uploadFileLocal: async (file, name, isTemplate, typeId) => {
+    uploadFileLocal: async (file, name, isTemplate) => {
         try {
             const { createReadStream, filename } = await file;
 
             // kiểm tra type tồn tại
-            const existType = await prisma.type.findUnique({ where: { id: typeId } });
-            if (!existType) throw new Error('Type not exist!');
+            // const existType = await prisma.type.findUnique({ where: { id: typeId } });
+            // if (!existType) throw new Error('Type not exist!');
 
             // lưu file vào local folder 'uploads'
             const uploadDir = path.join(process.cwd(), 'uploads');
@@ -106,7 +106,7 @@ const fileService = {
 
             // lưu metadata vào DB
             const newFile = await prisma.file.create({
-                data: { name, url, isTemplate, typeId },
+                data: { name, url, isTemplate },
             });
 
             return newFile;
@@ -115,15 +115,14 @@ const fileService = {
             throw new Error(err.message);
         }
     },
-    uploadFileCloud: async (file, name, isTemplate, typeId, userId) => {
+    uploadFileCloud: async (file, name, isTemplate, userId, typeName) => {
         try {
             const { createReadStream } = await file.file;
-
             // 1. Kiểm tra type tồn tại
-            const existType = await prisma.type.findUnique({ where: { id: typeId } });
-            if (!existType) {
-                throw new Error("Type not exist!");
-            }
+            // const existType = await prisma.type.findUnique({ where: { id: typeId } });
+            // if (!existType) {
+            //     throw new Error("Type not exist!");
+            // }
 
             // 2. Upload stream lên Cloudinary
             const stream = createReadStream();
@@ -150,7 +149,7 @@ const fileService = {
                     name,
                     url: uploadResult.secure_url,
                     isTemplate,
-                    typeId,
+                    typeName,
                     userId
                 },
             });
