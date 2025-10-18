@@ -17,6 +17,11 @@ const userSchema = gql`
     refreshToken: String!
   }
 
+  type DeleteResponse {
+    success: String!
+    message: String!
+  }
+
   extend type Query {
     Users: [User!]!
     User(id: ID!): User!
