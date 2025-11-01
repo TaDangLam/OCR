@@ -6,15 +6,15 @@ export const UPLOAD_FILE_CLOUD = gql`
     $file: Upload!,
     $name: String!,
     $isTemplate: Boolean!,
-    $typeId: ID!,
+    $typeName: String!,
     $userId: ID!
   ) {
-    uploadFileCloud(file: $file, name: $name, isTemplate: $isTemplate, typeId: $typeId, userId: $userId) {
+    uploadFileCloud(file: $file, name: $name, isTemplate: $isTemplate, typeName: $typeName, userId: $userId) {
       id
       name
       url
       isTemplate
-      type { id name }
+      typeName
       user { id name }
       createdAt
     }

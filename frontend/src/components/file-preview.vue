@@ -9,10 +9,11 @@
         </div>
 
         <div v-else class="flex flex-col gap-2 w-full">
-            <div class="bg-gray-100 border border-gray-300 rounded-lg p-1.5 w-full">
+            <div class="flex flex-col gap-0.5 bg-gray-100 border border-gray-300 rounded-lg p-1.5 w-full">
                 <div><strong>File Name:</strong> {{ templateFileLocal.name }}</div>
                 <div><strong>Type:</strong> {{ templateFileLocal.type || 'Không rõ' }}</div>
                 <div><strong>Size:</strong> {{ (templateFileLocal.size / 1024).toFixed(2) }} KB</div>
+                <div><strong>Template:</strong> <button class="cursor-pointer bg-rose-200 px-2 rounded-xl" @click="handleConfirmUpload">Confirm</button></div>
             </div>
             <div ref="pdfContainer" class="rounded-lg p-2 overflow-auto max-h-[85vh] flex flex-col items-center">
                 
@@ -24,12 +25,49 @@
 <script setup>
     import { ref, watch, nextTick  } from '@/libs/vue-export.js';
     import { pdfjsLib } from '@/libs/pdf';
+    import { useMutation } from '@/libs/apollo-client.js';
+    import { UPLOAD_FILE_CLOUD } from '@/graphql/index.js';
+    import { userID, token } from '@/libs/localStorage.js';
 
     const pdfContainer = ref(null);
+    const { mutate } = useMutation(UPLOAD_FILE_CLOUD);
 
     const props = defineProps({
         templateFileLocal: File
     });
+    
+    const handleConfirmUpload = async () => {
+        if (!props.templateFileLocal) return
+
+        try {
+            await mutate({
+                    file: props.templateFileLocal,
+                    name: props.templateFileLocal.name,
+                    isTemplate: true,
+                    typeName: props.templateFileLocal.type,
+                    userId: userID
+                }, {
+                   context: {
+                        headers: {
+                            authorization: `Bearer ${token}`
+                        }
+                    } 
+                });
+            alert('Upload thành công ✅')
+        } catch (err) {
+            console.error('❌ Upload thất bại:', err.message)
+            alert('Upload thất bại ❌')
+        }
+    }
+
+    // const watchTemplateFileLocal = watch(
+    //     () => props.templateFileLocal,
+    //     (newFile, oldFile) => {
+    //         console.log('File cũ:', oldFile);
+    //         console.log('File mới:', newFile);
+    //     }
+    // );
+    // console.log(watchTemplateFileLocal)
 
     watch(
         () => props.templateFileLocal,
@@ -78,13 +116,7 @@
 
         URL.revokeObjectURL(url);
     };
-    // watch(
-    //     () => props.templateFileLocal,
-    //     (newVal, oldVal) => {
-    //         console.log('📁 File mới được chọn:', newVal)
-    //         console.log('📁 File cũ:', oldVal)
-    //     }
-    // )
+
 </script>
 
 <style scoped>

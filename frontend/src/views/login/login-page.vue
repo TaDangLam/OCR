@@ -50,10 +50,11 @@
         e.preventDefault();
         try {
             const { data } = await mutate({email: email.value, password: password.value});
-            console.log('data: ', data);
+            // console.log('data: ', data);
                 if (data?.login?.accessToken) {
                     localStorage.setItem('accessToken', data.login.accessToken)
                     localStorage.setItem('refreshToken', data.login.refreshToken)
+                    localStorage.setItem('userId', data.login.user.id)
                     router.push('/home')
                 }
         } catch (error) {
