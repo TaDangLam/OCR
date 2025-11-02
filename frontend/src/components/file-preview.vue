@@ -13,7 +13,11 @@
                 <div><strong>File Name:</strong> {{ templateFileLocal.name }}</div>
                 <div><strong>Type:</strong> {{ templateFileLocal.type || 'Không rõ' }}</div>
                 <div><strong>Size:</strong> {{ (templateFileLocal.size / 1024).toFixed(2) }} KB</div>
-                <div><strong>Template:</strong> <button class="cursor-pointer bg-rose-200 px-2 rounded-xl" @click="handleConfirmUpload">Confirm</button></div>
+                <div class="flex items-center gap-1.5">
+                    <strong>Template:</strong> 
+                    <div v-if="isUploaded" class="flex items-center bg-emerald-600 text-white px-2 rounded-xl">Active</div>
+                    <button v-else class="cursor-pointer bg-gray-300 hover:bg-gray-400 hover:text-white px-2 rounded-xl" @click="handleConfirmUpload">Confirm</button>
+                </div>
             </div>
             <div ref="pdfContainer" class="rounded-lg p-2 overflow-auto max-h-[85vh] flex flex-col items-center">
                 
@@ -28,8 +32,10 @@
     import { useMutation } from '@/libs/apollo-client.js';
     import { UPLOAD_FILE_CLOUD } from '@/graphql/index.js';
     import { userID, token } from '@/libs/localStorage.js';
+    import { Notiflix } from '@/libs/notiflix.js';
 
     const pdfContainer = ref(null);
+    const isUploaded = ref(false);
     const { mutate } = useMutation(UPLOAD_FILE_CLOUD);
 
     const props = defineProps({
@@ -37,28 +43,48 @@
     });
     
     const handleConfirmUpload = async () => {
-        if (!props.templateFileLocal) return
+    if (!props.templateFileLocal) return;
 
-        try {
-            await mutate({
+    Notiflix.Confirm.show(
+        'Confirm Upload',
+        'Are you sure you want to upload this template?',
+        'Yes',
+        'No', 
+        async () => {
+            Notiflix.Loading.circle('Uploading...');
+            try {
+                await mutate(
+                {
                     file: props.templateFileLocal,
                     name: props.templateFileLocal.name,
                     isTemplate: true,
                     typeName: props.templateFileLocal.type,
                     userId: userID
-                }, {
-                   context: {
+                },
+                {
+                    context: {
                         headers: {
                             authorization: `Bearer ${token}`
                         }
-                    } 
-                });
-            alert('Upload thành công ✅')
-        } catch (err) {
-            console.error('❌ Upload thất bại:', err.message)
-            alert('Upload thất bại ❌')
+                    }
+                }
+                );
+
+                Notiflix.Loading.remove();
+                Notiflix.Notify.success('Upload successfully!');
+                isUploaded.value = true;
+            } catch (err) {
+                Notiflix.Loading.remove();
+                Notiflix.Notify.failure('Upload failed!');
+                console.error('❌ Upload failure:', err.message);
+            }
+        },
+        () => {
+        
+        Notiflix.Notify.info('Upload canceled');
         }
-    }
+    );
+    };
 
     // const watchTemplateFileLocal = watch(
     //     () => props.templateFileLocal,
