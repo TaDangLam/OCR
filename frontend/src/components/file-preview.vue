@@ -18,6 +18,9 @@
                     <div v-if="isUploaded" class="flex items-center bg-emerald-600 text-white px-2 rounded-xl">Active</div>
                     <button v-else class="cursor-pointer bg-gray-300 hover:bg-gray-400 hover:text-white px-2 rounded-xl" @click="handleConfirmUpload">Confirm</button>
                 </div>
+                <div v-if="uploadFiles && uploadFiles.length > 0">
+                    <strong>Files Uploaded:</strong> {{ uploadFiles.length }}
+                </div>
             </div>
             <div ref="pdfContainer" class="rounded-lg p-2 overflow-auto max-h-[85vh] flex flex-col items-center">
                 
@@ -38,62 +41,56 @@
     const isUploaded = ref(false);
     const { mutate } = useMutation(UPLOAD_FILE_CLOUD);
 
+    const emit = defineEmits(['can-upload-files']);
     const props = defineProps({
-        templateFileLocal: File
+        templateFileLocal: File,
+        uploadFiles: Array
     });
-    
-    const handleConfirmUpload = async () => {
-    if (!props.templateFileLocal) return;
 
-    Notiflix.Confirm.show(
-        'Confirm Upload',
-        'Are you sure you want to upload this template?',
-        'Yes',
-        'No', 
-        async () => {
-            Notiflix.Loading.circle('Uploading...');
-            try {
-                await mutate(
-                {
-                    file: props.templateFileLocal,
-                    name: props.templateFileLocal.name,
-                    isTemplate: true,
-                    typeName: props.templateFileLocal.type,
-                    userId: userID
-                },
-                {
-                    context: {
-                        headers: {
-                            authorization: `Bearer ${token}`
+    const handleConfirmUpload = async () => {
+        if (!props.templateFileLocal) return;
+
+        Notiflix.Confirm.show(
+            'Confirm Upload',
+            'Are you sure you want to upload this template?',
+            'Yes',
+            'No', 
+            async () => {
+                Notiflix.Loading.circle('Uploading...');
+                try {
+                    await mutate(
+                    {
+                        file: props.templateFileLocal,
+                        name: props.templateFileLocal.name,
+                        isTemplate: true,
+                        typeName: props.templateFileLocal.type,
+                        userId: userID
+                    },
+                    {
+                        context: {
+                            headers: {
+                                authorization: `Bearer ${token}`
+                            }
                         }
                     }
+                    );
+
+                    Notiflix.Loading.remove();
+                    Notiflix.Notify.success('Upload successfully!');
+                    isUploaded.value = true;
+                    emit('can-upload-files', true)
+                } catch (err) {
+                    Notiflix.Loading.remove();
+                    Notiflix.Notify.failure('Upload failed!');
+                    console.error('❌ Upload failure:', err.message);
                 }
-                );
-
-                Notiflix.Loading.remove();
-                Notiflix.Notify.success('Upload successfully!');
-                isUploaded.value = true;
-            } catch (err) {
-                Notiflix.Loading.remove();
-                Notiflix.Notify.failure('Upload failed!');
-                console.error('❌ Upload failure:', err.message);
+            },
+            () => {
+            
+            Notiflix.Notify.info('Upload canceled');
             }
-        },
-        () => {
-        
-        Notiflix.Notify.info('Upload canceled');
-        }
-    );
+        );
     };
-
-    // const watchTemplateFileLocal = watch(
-    //     () => props.templateFileLocal,
-    //     (newFile, oldFile) => {
-    //         console.log('File cũ:', oldFile);
-    //         console.log('File mới:', newFile);
-    //     }
-    // );
-    // console.log(watchTemplateFileLocal)
 
     watch(
         () => props.templateFileLocal,
