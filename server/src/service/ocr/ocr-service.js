@@ -136,43 +136,43 @@ const ocrService = {
         // 2️⃣ Upload nhiều file song song bằng Promise.all
         const uploadedFiles = await Promise.all(
             files.map(async (upload) => {
-            const { createReadStream, filename } = await upload.file;
-            const stream = createReadStream();
-            
-            // 3️⃣ Upload lên Cloudinary
-            const uploadResult = await new Promise((resolve, reject) => {
-                const cloudStream = cloudinary.uploader.upload_stream(
-                    { folder: "ocr-files", resource_type: "auto" },
-                    (err, result) => (err ? reject(err) : resolve(result))
-                );
-                stream.pipe(cloudStream);
-            });
-            console.log(uploadResult)
-            if (!uploadResult || !uploadResult.secure_url) {
-                throw new Error("Cloudinary upload failed!");
-            }
+                const { createReadStream, filename } = await upload.file;
+                const stream = createReadStream();
+                
+                // 3️⃣ Upload lên Cloudinary
+                const uploadResult = await new Promise((resolve, reject) => {
+                    const cloudStream = cloudinary.uploader.upload_stream(
+                        { folder: "ocr-files", resource_type: "auto" },
+                        (err, result) => (err ? reject(err) : resolve(result))
+                    );
+                    stream.pipe(cloudStream);
+                });
+                // console.log(uploadResult)
+                if (!uploadResult || !uploadResult.secure_url) {
+                    throw new Error("Cloudinary upload failed!");
+                }
 
-            // 4️⃣ Lưu metadata file vào DB
-            const newFile = await prisma.file.create({
-                data: {
-                name: filename,
-                url: uploadResult.secure_url,
-                isTemplate: false,
-                templateId,
-                userId,
-                typeId: template.typeId,
-                },
-            });
+                // 4️⃣ Lưu metadata file vào DB
+                const newFile = await prisma.file.create({
+                    data: {
+                        name: filename,
+                        url: uploadResult.secure_url,
+                        isTemplate: false,
+                        templateId,
+                        userId,
+                        typeName: template.typeName,
+                    },
+                });
 
-            return newFile;
+                return newFile;
             })
         );
 
-        // 5️⃣ Trả về danh sách file đã upload
-        return uploadedFiles;
+            // 5️⃣ Trả về danh sách file đã upload
+            return uploadedFiles;
         } catch (err) {
-        //   console.error("uploadFiles:", err.message);
-        throw new Error(err.message);
+            //   console.error("uploadFiles:", err.message);
+            throw new Error(err.message);
         }
     },
     createOCR: async(fileId) => {
