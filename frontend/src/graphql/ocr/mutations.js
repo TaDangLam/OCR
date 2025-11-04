@@ -1,5 +1,17 @@
 import { gql } from '@/libs/apollo-client.js';
 
+export const UPLOAD_FILES = gql`
+    mutation UploadFiles($templateId: ID!, $userId: ID!, $files: [Upload!]!) {
+        uploadFiles(templateId: $templateId, userId: $userId, files: $files) {
+            id
+            name
+            typeName
+            url
+            isTemplate
+        }
+    }
+`
+
 export const CREATE_OCR_FIELDS = gql`
     mutation CreateOCRField($fileId: ID!, $fieldName: String!, $x: Int!, $y: Int!, $width: Int!, $height: Int!) {
         createOCRField(fileId: $fileId, fieldName: $fieldName, x: $x, y: $y, width: $width, height: $height) {

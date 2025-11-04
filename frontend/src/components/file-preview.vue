@@ -15,11 +15,13 @@
                 <div><strong>Size:</strong> {{ (templateFileLocal.size / 1024).toFixed(2) }} KB</div>
                 <div class="flex items-center gap-1.5">
                     <strong>Template:</strong> 
-                    <div v-if="isUploaded" class="flex items-center bg-emerald-600 text-white px-2 rounded-xl">Active</div>
-                    <button v-else class="cursor-pointer bg-gray-300 hover:bg-gray-400 hover:text-white px-2 rounded-xl" @click="handleConfirmUpload">Confirm</button>
+                    <div v-if="isUploadedTempalte" class="flex items-center bg-emerald-600 text-white px-2 rounded-xl">Active</div>
+                    <button v-else class="cursor-pointer bg-gray-300 hover:bg-gray-400 hover:text-white px-2 rounded-xl" @click="handleConfirmUploadTemplate">Confirm</button>
                 </div>
-                <div v-if="uploadFiles && uploadFiles.length > 0">
-                    <strong>Files Uploaded:</strong> {{ uploadFiles.length }}
+                <div v-if="uploadFiles && uploadFiles.length > 0" class="flex items-center gap-2.5">
+                    <div><strong>Files Uploaded:</strong> {{ uploadFiles.length }}</div> 
+                    <div v-if="isUploadFiles" class="flex items-center bg-emerald-600 text-white px-2 rounded-xl">Active</div>
+                    <button v-else @click="handleConfirmUploadBulkFiles" class="cursor-pointer bg-gray-300 hover:bg-gray-400 hover:text-white px-2 rounded-xl" >Confirm</button>
                 </div>
             </div>
             <div ref="pdfContainer" class="rounded-lg p-2 overflow-auto max-h-[85vh] flex flex-col items-center">
@@ -33,13 +35,16 @@
     import { ref, watch, nextTick  } from '@/libs/vue-export.js';
     import { pdfjsLib } from '@/libs/pdf';
     import { useMutation } from '@/libs/apollo-client.js';
-    import { UPLOAD_FILE_CLOUD } from '@/graphql/index.js';
+    import { UPLOAD_FILE_CLOUD, UPLOAD_FILES } from '@/graphql/index.js';
     import { userID, token } from '@/libs/localStorage.js';
     import { Notiflix } from '@/libs/notiflix.js';
 
     const pdfContainer = ref(null);
-    const isUploaded = ref(false);
-    const { mutate } = useMutation(UPLOAD_FILE_CLOUD);
+    const isUploadedTempalte = ref(false);
+    const isUploadFiles = ref(false);
+    const templateID = ref('');
+    const { mutate: uploadFileCloud } = useMutation(UPLOAD_FILE_CLOUD);
+    const { mutate: uploadBulkFiless } = useMutation(UPLOAD_FILES);
 
     const emit = defineEmits(['can-upload-files']);
     const props = defineProps({
@@ -47,7 +52,7 @@
         uploadFiles: Array
     });
 
-    const handleConfirmUpload = async () => {
+    const handleConfirmUploadTemplate = async () => {
         if (!props.templateFileLocal) return;
 
         Notiflix.Confirm.show(
@@ -58,26 +63,27 @@
             async () => {
                 Notiflix.Loading.circle('Uploading...');
                 try {
-                    await mutate(
-                    {
-                        file: props.templateFileLocal,
-                        name: props.templateFileLocal.name,
-                        isTemplate: true,
-                        typeName: props.templateFileLocal.type,
-                        userId: userID
-                    },
-                    {
-                        context: {
-                            headers: {
-                                authorization: `Bearer ${token}`
+                    const { data } = await uploadFileCloud(
+                        {
+                            file: props.templateFileLocal,
+                            name: props.templateFileLocal.name,
+                            isTemplate: true,
+                            typeName: props.templateFileLocal.type,
+                            userId: userID
+                        },
+                        {
+                            context: {
+                                headers: {
+                                    authorization: `Bearer ${token}`
+                                }
                             }
                         }
-                    }
                     );
 
                     Notiflix.Loading.remove();
                     Notiflix.Notify.success('Upload successfully!');
-                    isUploaded.value = true;
+                    isUploadedTempalte.value = true;
+                    templateID.value = data.uploadFileCloud.id;
                     emit('can-upload-files', true)
                 } catch (err) {
                     Notiflix.Loading.remove();
@@ -102,6 +108,54 @@
         },
         { immediate: true }
     );
+
+    const handleConfirmUploadBulkFiles = async () => {
+        if (!props.uploadFiles || props.uploadFiles.length === 0) {
+            Notiflix.Notify.warning('No files to upload!');
+            return;
+        }
+        
+        if (!templateID.value) {
+            Notiflix.Notify.warning('Template not uploaded yet!');
+            return;
+        }
+
+        Notiflix.Confirm.show(
+            'Confirm Upload Bulk Files',
+            `Are you sure you want to upload ${props.uploadFiles.length} files?`,
+            'Yes',
+            'No',
+            async () => {
+                Notiflix.Loading.circle('Uploading Bulk Files...');
+                try {
+                    await uploadBulkFiless(
+                        {
+                            templateId: templateID.value,
+                            userId: userID,
+                            files: props.uploadFiles
+                        },
+                        {
+                            context: {
+                                headers: {
+                                    authorization: `Bearer ${token}`
+                                }
+                            }
+                        }
+                    );
+                    isUploadFiles.value = true;
+                    Notiflix.Loading.remove();
+                    Notiflix.Notify.success('Upload successfully!');
+                } catch (err) {
+                    Notiflix.Loading.remove();
+                    Notiflix.Notify.failure('Upload failed!');
+                    console.error('❌ Upload failure:', err.message);
+                }
+            },
+            () => {
+                Notiflix.Notify.info('Upload canceled');
+            }
+        );
+    };
 
     const clearPDF = () => {
         if (pdfContainer.value) pdfContainer.value.innerHTML = '';
