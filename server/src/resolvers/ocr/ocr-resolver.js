@@ -12,7 +12,7 @@ const ocrResolvers = {
         createManyOCRField: checkRoles(true, true)(async(_, { fileId, fields }) => await ocrService.createManyOCRField(fileId, fields)),
         updateOCRField: checkRoles(true, true)(async(_, { id, fieldName, x, y, width, height }) => await ocrService.updateOCRField(id, fieldName, x, y, width, height)),
         deleteOCRField: checkRoles(true, true)(async(_, { id }) => await ocrService.deleteOCRField(id)),
-        uploadFiles: checkRoles(true, true)(async(_, { templateId, files }, context) => await ocrService.uploadFiles(templateId, context.user.id, files)),
+        uploadFiles: checkRoles(true, true)(async(_, { templateId, userId, files }, context) => await ocrService.uploadFiles(templateId, userId, files)),
         createOCR: checkRoles(true, true)(async(_, { fileId }) => await ocrService.createOCR(fileId)),
         runOCR: checkRoles(true, true)(async(_, { fileId }) => await ocrService.runOCR(fileId)),
     }
