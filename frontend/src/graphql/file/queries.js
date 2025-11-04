@@ -7,7 +7,7 @@ export const GET_ALL_FILES_NO_TEMPLATE = gql`
       name
       url
       isTemplate
-      type { id name }
+      typeName
       user { id name }
       ocrFields { id name value }
       ocr { id name result }
@@ -23,7 +23,7 @@ export const GET_FILE_ID_NO_TEMPLATE = gql`
       name
       url
       isTemplate
-      type { id name }
+      typeName
       user { id name }
       ocrFields { id name value }
       ocr { id name result }
@@ -38,7 +38,7 @@ export const GET_ALL_FILE_TEMPLATES = gql`
       id
       name
       url
-      type { id name }
+      typeName
       user { id name }
       createdAt
     }
@@ -51,7 +51,7 @@ export const GET_FILE_TEMPLATE_BY_ID = gql`
       id
       name
       url
-      type { id name }
+      typeName
       user { id name }
       createdAt
     }
@@ -63,7 +63,7 @@ export const GET_FILE_CHILDREN_BY_TEMPLATE = gql`
       id
       name
       url
-      type { id name }
+      typeName
       user { id name }
       createdAt
     }
