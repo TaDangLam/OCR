@@ -36,7 +36,7 @@
     import { pdfjsLib } from '@/libs/pdf';
     import { useMutation } from '@/libs/apollo-client.js';
     import { UPLOAD_FILE_CLOUD, UPLOAD_FILES } from '@/graphql/index.js';
-    import { userID, token } from '@/libs/sessionStorage.js';
+    import { userID, token } from '@/libs/localStorage.js';
     import { Notiflix } from '@/libs/notiflix.js';
 
     const pdfContainer = ref(null);
@@ -117,6 +117,19 @@
         
         if (!templateID.value) {
             Notiflix.Notify.warning('Template not uploaded yet!');
+            return;
+        }
+
+        const templateType = props.templateFileLocal?.type;
+        const invalidFiles = props.uploadFiles.filter(f => f.type !== templateType);
+
+        if (invalidFiles.length > 0) {
+            const invalidNames = invalidFiles.map(f => f.name).join(', ');
+            Notiflix.Report.warning(
+                'Invalid File Type',
+                `Some files do not match the template type (${templateType}). Invalid files: ${invalidNames}`,
+                'OK'
+            );
             return;
         }
 
