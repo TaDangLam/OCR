@@ -36,7 +36,7 @@
     import { pdfjsLib } from '@/libs/pdf';
     import { useMutation } from '@/libs/apollo-client.js';
     import { UPLOAD_FILE_CLOUD, UPLOAD_FILES } from '@/graphql/index.js';
-    import { userID, token } from '@/libs/localStorage.js';
+    import { userID, token } from '@/libs/sessionStorage.js';
     import { Notiflix } from '@/libs/notiflix.js';
 
     const pdfContainer = ref(null);
