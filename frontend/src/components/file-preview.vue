@@ -36,7 +36,7 @@
     import { pdfjsLib } from '@/libs/pdf';
     import { useMutation } from '@/libs/apollo-client.js';
     import { UPLOAD_FILE_CLOUD, UPLOAD_FILES } from '@/graphql/index.js';
-    import { userID, token } from '@/libs/localStorage.js';
+    import { useAuth } from '@/libs/use-auth.js';
     import { Notiflix } from '@/libs/notiflix.js';
 
     const pdfContainer = ref(null);
@@ -45,6 +45,7 @@
     const templateID = ref('');
     const { mutate: uploadFileCloud } = useMutation(UPLOAD_FILE_CLOUD);
     const { mutate: uploadBulkFiless } = useMutation(UPLOAD_FILES);
+    const { userID, accessToken } = useAuth();
 
     const emit = defineEmits(['can-upload-files']);
     const props = defineProps({
@@ -69,12 +70,12 @@
                             name: props.templateFileLocal.name,
                             isTemplate: true,
                             typeName: props.templateFileLocal.type,
-                            userId: userID
+                            userId: userID.value
                         },
                         {
                             context: {
                                 headers: {
-                                    authorization: `Bearer ${token}`
+                                    authorization: `Bearer ${accessToken.value}`
                                 }
                             }
                         }
@@ -144,13 +145,13 @@
                     await uploadBulkFiless(
                         {
                             templateId: templateID.value,
-                            userId: userID,
+                            userId: userID.value,
                             files: props.uploadFiles
                         },
                         {
                             context: {
                                 headers: {
-                                    authorization: `Bearer ${token}`
+                                    authorization: `Bearer ${accessToken.value}`
                                 }
                             }
                         }
