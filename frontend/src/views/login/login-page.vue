@@ -39,23 +39,25 @@
     import { useMutation } from '@/libs/apollo-client.js'
     import { LOGIN_USER } from '@/graphql/index.js'
     import { useRouter } from "vue-router";
+    import { useAuth } from '@/libs/use-auth.js';
+
     const router = useRouter();
-    
+    const { setAuth } = useAuth() 
     const email = ref('');
     const password = ref('');
-
     const { mutate } = useMutation(LOGIN_USER)
 
     const handleLogin = async(e) => {
         e.preventDefault();
         try {
             const { data } = await mutate({email: email.value, password: password.value});
-            // console.log('data: ', data);
                 if (data?.login?.accessToken) {
-                    localStorage.setItem('accessToken', data.login.accessToken)
-                    localStorage.setItem('refreshToken', data.login.refreshToken)
-                    localStorage.setItem('userId', data.login.user.id)
-                    router.push('/home')
+                    setAuth({
+                        access: data.login.accessToken,
+                        refresh: data.login.refreshToken,
+                        id: data.login.user.id
+                    })
+                    router.push('/home');
                 }
         } catch (error) {
             console.error('Lỗi login:', error.message)
