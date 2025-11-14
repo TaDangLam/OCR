@@ -24,11 +24,39 @@
                     <button v-else @click="handleConfirmUploadBulkFiles" class="cursor-pointer bg-gray-300 hover:bg-gray-400 hover:text-white px-2 rounded-xl" >Confirm</button>
                 </div>
             </div>
-            <div ref="pdfContainer" class="rounded-lg p-2 overflow-auto max-h-[85vh] flex flex-col items-center">
-                
+            <!-- <div class="flex gap-5 items-center justify-center">
+                <button @click="zoomIn" class="bg-slate-300 px-3 hover:bg-rose-500 cursor-pointer text-center duration-200">-</button>
+                <span>Zoom: {{ (pdfScale * 100).toFixed(0) }}%</span>
+                <button @click="zoomOut" class="bg-slate-300 px-3 hover:bg-lime-500 cursor-pointer text-center duration-200">+</button>
+            </div> -->
+            <div class="relative rounded-lg p-2 overflow-auto max-h-[85vh] flex flex-col items-center">
+                <div ref="pdfContainer" class="relative"></div>
+                <div class="absolute inset-0">
+                    <Vue3DraggableResizable
+                        v-for="(box, index) in localBoxes"
+                        :key="index"
+                        :x="box.x"
+                        :y="box.y"
+                        :w="box.width"
+                        :h="box.height"
+                        :parent="true"
+                        :resizable="true"
+                        :draggable="true"
+                        @dragstop="(x, y) => updateBoxPosition(index, x, y)"
+                        @resizestop="(x, y, w, h) => updateBoxSize(index, x, y, w, h)"
+                        :style="{
+                            border: box.fieldName === 'File Name' ? '2px solid black' : '1px dashed rgba(0,0,0,0.3)',
+                            backgroundColor: box.fieldName === 'File Name' ? 'rgba(0,0,0,0.8)' : 'transparent'
+                        }"
+                    >
+                        <div class="text-center text-xs bg-slate-300 p-0.5 border-b-1 shadow">
+                            {{ box.fieldName }}
+                        </div>
+                    </Vue3DraggableResizable>
+                </div>
             </div>
         </div>
-    </div>
+    </div> 
 </template>
 
 <script setup>
@@ -38,8 +66,11 @@
     import { UPLOAD_FILE_CLOUD, UPLOAD_FILES } from '@/graphql/index.js';
     import { useAuth } from '@/libs/use-auth.js';
     import { Notiflix } from '@/libs/notiflix.js';
+    import { Vue3DraggableResizable } from '@/libs/draggable.js';
 
+    const localBoxes = ref([]);
     const pdfContainer = ref(null);
+    // const pdfScale = ref(1);
     const isUploadedTempalte = ref(false);
     const isUploadFiles = ref(false);
     const templateID = ref('');
@@ -47,10 +78,14 @@
     const { mutate: uploadBulkFiless } = useMutation(UPLOAD_FILES);
     const { userID, accessToken } = useAuth();
 
-    const emit = defineEmits(['can-upload-files']);
+    const emit = defineEmits([
+        'can-upload-files',
+    ]);
     const props = defineProps({
         templateFileLocal: File,
-        uploadFiles: Array
+        uploadFiles: Array,
+        showOcrEditor: Boolean,
+        ocrBoxes: Array
     });
 
     const handleConfirmUploadTemplate = async () => {
@@ -108,6 +143,14 @@
             renderPDF(url);
         },
         { immediate: true }
+    );
+
+    watch(
+        () => props.ocrBoxes,
+        (newVal) => {
+            localBoxes.value = JSON.parse(JSON.stringify(newVal)); // deep clone
+        },
+        { immediate: true, deep: true }
     );
 
     const handleConfirmUploadBulkFiles = async () => {
@@ -208,6 +251,48 @@
         URL.revokeObjectURL(url);
     };
 
+    // const zoomIn = () => {
+    //     pdfScale.value += 0.2; // mỗi lần zoom 20%
+    //     if (props.templateFileLocal) renderPDF(URL.createObjectURL(props.templateFileLocal));
+    // };
+
+    // const zoomOut = () => {
+    //     pdfScale.value = Math.max(0.2, pdfScale.value - 0.2); // tránh scale quá nhỏ
+    //     if (props.templateFileLocal) renderPDF(URL.createObjectURL(props.templateFileLocal));
+    // };
+
+    // Khi click PDF → thêm box mới
+    // const handleAddOcrBox = (event) => {
+    //     if (!pdfContainer.value) return; // đảm bảo container tồn tại
+
+    //     const containerRect = pdfContainer.value.getBoundingClientRect();
+    //     const x = event.clientX - containerRect.left;
+    //     const y = event.clientY - containerRect.top;
+
+    //     ocrBoxes.value.push({
+    //         x,
+    //         y,
+    //         width: 100,
+    //         height: 50,
+    //         fieldName: `Field_${ocrBoxes.value.length + 1}`
+    //     });
+        
+    //     console.log('click x, y:', x, y);
+    // };
+
+    const updateBoxPosition = (index, x, y) => {
+        localBoxes.value[index].x = x;
+        localBoxes.value[index].y = y;
+        emit('update-boxes', localBoxes.value);
+    };
+
+    const updateBoxSize = (index, x, y, w, h) => {
+        localBoxes.value[index].x = x;
+        localBoxes.value[index].y = y;
+        localBoxes.value[index].width = w;
+        localBoxes.value[index].height = h;
+        emit('update-boxes', localBoxes.value);
+    };
 </script>
 
 <style scoped>
