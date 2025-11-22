@@ -42,16 +42,15 @@
                         :parent="true"
                         :resizable="true"
                         :draggable="true"
-                        @dragstop="(x, y) => updateBoxPosition(index, x, y)"
-                        @resizestop="(x, y, w, h) => updateBoxSize(index, x, y, w, h)"
+                        @drag-end="(position) => updateBoxPosition(index, position)"
+                        @resize-end="(box) => updateBoxSize(index, box)"
                         :style="{
                             border: box.fieldName === 'File Name' ? '2px solid black' : '1px dashed rgba(0,0,0,0.3)',
                             backgroundColor: box.fieldName === 'File Name' ? 'rgba(0,0,0,0.8)' : 'transparent'
                         }"
                     >
-                        <div class="text-center text-xs bg-slate-300 p-0.5 border-b-1 shadow">
-                            {{ box.fieldName }}
-                        </div>
+                        <div class="absolute flex items-center justify-center -top-4 left-0 text-xs w-full">{{ box.fieldName }}</div>
+                        <div></div>
                     </Vue3DraggableResizable>
                 </div>
             </div>
@@ -80,6 +79,8 @@
 
     const emit = defineEmits([
         'can-upload-files',
+        'update-boxes',
+        'uploaded-bulk-success'
     ]);
     const props = defineProps({
         templateFileLocal: File,
@@ -200,6 +201,7 @@
                         }
                     );
                     isUploadFiles.value = true;
+                    emit('uploaded-bulk-success');
                     Notiflix.Loading.remove();
                     Notiflix.Notify.success('Upload successfully!');
                 } catch (err) {
@@ -280,17 +282,17 @@
     //     console.log('click x, y:', x, y);
     // };
 
-    const updateBoxPosition = (index, x, y) => {
-        localBoxes.value[index].x = x;
-        localBoxes.value[index].y = y;
+    const updateBoxPosition = (index, position) => {
+        localBoxes.value[index].x = position.x;
+        localBoxes.value[index].y = position.y;
         emit('update-boxes', localBoxes.value);
     };
 
-    const updateBoxSize = (index, x, y, w, h) => {
-        localBoxes.value[index].x = x;
-        localBoxes.value[index].y = y;
-        localBoxes.value[index].width = w;
-        localBoxes.value[index].height = h;
+    const updateBoxSize = (index, box) => {
+        localBoxes.value[index].x = box.x;
+        localBoxes.value[index].y = box.y;
+        localBoxes.value[index].width = box.w;
+        localBoxes.value[index].height = box.h;
         emit('update-boxes', localBoxes.value);
     };
 </script>

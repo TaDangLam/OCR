@@ -14,7 +14,7 @@
             <button type="button" class="py-1 px-5 bg-gray-300 cursor-pointer hover:bg-gray-400 hover:text-white rounded-lg">Run OCR</button>
         </div>
         <div class="flex items-center justify-center gap-5">
-            <button v-if="selectedFiles && selectedFiles.length > 0" @click="handleResetFiles" type="button" class="py-1 px-5 bg-gray-300 cursor-pointer hover:bg-gray-400 hover:text-white rounded-lg">Reset Uploaded Files</button>
+            <button v-if="!props.hideReset && selectedFiles && selectedFiles.length > 0" @click="handleResetFiles" type="button" class="py-1 px-5 bg-gray-300 cursor-pointer hover:bg-gray-400 hover:text-white rounded-lg">Reset Uploaded Files</button>
             <OCRField 
 				v-if="showOcrEditor"
 			/>
@@ -37,6 +37,7 @@
     const props = defineProps({
         canUploadFiles: Boolean,
         showOcrEditor: Boolean,
+        hideReset: Boolean
     });
 
     const selectedFiles = ref([]);

@@ -11,12 +11,15 @@
 				@add-ocr-box="handleAddOcrBasicBox"
 				:showOcrEditor="showOcrEditor"
 				:can-upload-files="canUploadFiles"
+				:hide-reset="hideResetFilesButton"
 			/>
 		</div>
 		<div class="flex gap-3 w-full">
 			<div class="bg-blue-100 w-1/2 p-3 rounded-lg">
 				<FileReview 
 					@can-upload-files="handleCanUploadFiles"
+					@update-boxes="handleOcrBoxes"
+					@uploaded-bulk-success="handleUploadedBulkSuccess"
 					:templateFileLocal="templateFileLocal"
 					:uploadFiles="uploadFiles"
 					:showOcrEditor="showOcrEditor"
@@ -39,6 +42,7 @@
 	import OcrResult from '@/components/ocr-result.vue';
 	import { useAuth } from '@/libs/use-auth.js';
 	import { useRouter } from "vue-router";
+	import { Notiflix } from '@/libs/notiflix.js';
 
     const router = useRouter();
 	const { clearAuth } = useAuth(); 
@@ -47,6 +51,7 @@
 	const uploadFiles = ref([]);
 	const showOcrEditor = ref(false);
 	const ocrBoxes = ref([]);
+	const hideResetFilesButton = ref(false);
 	
 	const logout = () => {
 		clearAuth();
@@ -61,17 +66,41 @@
 		uploadFiles.value = event;
 	}
 
+	const handleUploadedBulkSuccess = () => {
+		hideResetFilesButton.value = true;
+	}
+
 	const handleAddOcrBasicBox = () => {
-    	// tạo box basic 100x100 ở vị trí default
-		ocrBoxes.value.push({
-			id: Date.now(),
-			x: 50,
-			y: 50,
-			width: 100,
-			height: 40,
-			fieldName: "fielName",
-		});
+		Notiflix.Confirm.prompt(
+			'Add OCR Field',
+			'Enter the field name:',
+			'',
+			'OK',
+			'Cancel',
+			(value) => {
+				if (!value) {
+					Notiflix.Report.warning('Field name cannot be empty!', 'Please enter field name', 'OK');
+					return;
+				}
+
+				ocrBoxes.value.push({
+					id: Date.now(),
+					x: 50,
+					y: 50,
+					width: 150,
+					height: 40,
+					fieldName: value,
+				});
+			},
+			() => {
+				// Cancel action
+			}
+		);
 	};
+
+	const handleOcrBoxes = (ocrBox) => {
+		ocrBoxes.value = ocrBox;
+	}
 </script>
 
 <style scoped></style>
