@@ -20,6 +20,7 @@
 					@can-upload-files="handleCanUploadFiles"
 					@update-boxes="handleOcrBoxes"
 					@uploaded-bulk-success="handleUploadedBulkSuccess"
+					@template-id="handleSetTemplateId"
 					:templateFileLocal="templateFileLocal"
 					:uploadFiles="uploadFiles"
 					:showOcrEditor="showOcrEditor"
@@ -52,6 +53,7 @@
 	const showOcrEditor = ref(false);
 	const ocrBoxes = ref([]);
 	const hideResetFilesButton = ref(false);
+	const templateId = ref('');
 	
 	const logout = () => {
 		clearAuth();
@@ -84,7 +86,7 @@
 				}
 
 				ocrBoxes.value.push({
-					id: Date.now(),
+					fileId: templateId.value,
 					x: 50,
 					y: 50,
 					width: 150,
@@ -100,6 +102,11 @@
 
 	const handleOcrBoxes = (ocrBox) => {
 		ocrBoxes.value = ocrBox;
+		console.log('ocrBoxes.value: ', ocrBoxes.value);
+	}
+
+	const handleSetTemplateId = (id) => {
+		templateId.value = id;
 	}
 </script>
 

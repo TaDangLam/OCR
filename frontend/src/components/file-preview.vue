@@ -80,7 +80,8 @@
     const emit = defineEmits([
         'can-upload-files',
         'update-boxes',
-        'uploaded-bulk-success'
+        'uploaded-bulk-success',
+        'template-id'
     ]);
     const props = defineProps({
         templateFileLocal: File,
@@ -121,6 +122,7 @@
                     Notiflix.Notify.success('Upload successfully!');
                     isUploadedTempalte.value = true;
                     templateID.value = data.uploadFileCloud.id;
+                    emit('template-id', templateID.value)
                     emit('can-upload-files', true)
                 } catch (err) {
                     Notiflix.Loading.remove();
