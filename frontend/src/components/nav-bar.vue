@@ -17,8 +17,9 @@
             <button v-if="!props.hideReset && selectedFiles && selectedFiles.length > 0" @click="handleResetFiles" type="button" class="py-1 px-5 bg-gray-300 cursor-pointer hover:bg-gray-400 hover:text-white rounded-lg">Reset Uploaded Files</button>
             <OCRField 
 				v-if="showOcrEditor"
+                @save-ocr-fields="emit('save-ocr-fields')"
+                @cancel-ocr-fields="emit('cancel-ocr-fields')"
 			/>
-            <!-- <button type="button" class="py-1 px-5 bg-gray-300 cursor-pointer hover:bg-gray-400 hover:text-white rounded-lg">Profile</button> -->
         </div>
     </div>
 </template>
@@ -32,7 +33,9 @@
         'update-template',
         'update-files',
         'open-ocr-editor',
-        'add-ocr-box'
+        'add-ocr-box',
+        'save-ocr-fields',
+        'cancel-ocr-fields'
     ]);
     const props = defineProps({
         canUploadFiles: Boolean,

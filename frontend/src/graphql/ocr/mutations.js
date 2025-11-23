@@ -27,11 +27,15 @@ export const CREATE_OCR_FIELDS = gql`
 `
 
 export const CREATE_MANY_OCR_FIELDS = gql`
-    mutation CreateManyOCRField($name: String!, $email: String!, $password: String!) {
-        createManyOCRField(name: $name, email: $email, password: $password) {
+    mutation CreateManyOCRField($fileId: ID!, $fields: [OCRFieldInput!]!) {
+        createManyOCRField(fileId: $fileId, fields: $fields) {
             id
-            name
-            email
+            fieldName
+            x
+            y
+            width
+            height
+            file { id name }
         }
     }
 `
