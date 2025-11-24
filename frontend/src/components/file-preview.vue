@@ -123,7 +123,7 @@
                     isUploadedTempalte.value = true;
                     templateID.value = data.uploadFileCloud.id;
                     emit('template-id', templateID.value)
-                    emit('can-upload-files', true)
+                    emit('can-upload-files', 2)
                 } catch (err) {
                     Notiflix.Loading.remove();
                     Notiflix.Notify.failure('Upload failed!');
@@ -204,6 +204,7 @@
                     );
                     isUploadFiles.value = true;
                     emit('uploaded-bulk-success');
+                    emit('can-upload-files', 3)
                     Notiflix.Loading.remove();
                     Notiflix.Notify.success('Upload successfully!');
                 } catch (err) {

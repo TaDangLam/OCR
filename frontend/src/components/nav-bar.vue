@@ -3,15 +3,15 @@
         <div class="flex items-center justify-center gap-5 py-1">
             <label id="uploadTemplate" class="py-1 px-5 bg-gray-300 cursor-pointer hover:bg-gray-400 hover:text-white rounded-lg">
                 Upload Template
-                <input class="uploadTemplate" @change="handleSelectFileTemplate" type="file" hidden accept="*/*">
+                <input class="uploadTemplate" @change="handleSelectFileTemplate" type="file" hidden accept="*/*" >
             </label>
             <label class="py-1 px-5 bg-gray-300 cursor-pointer hover:bg-gray-400 hover:text-white rounded-lg">
                 Upload Files
                 <input @click="handleClickBeforeUpload" @change="handleUploadFiles" id="uploadFilesInput" class="uploadTemplate" type="file" hidden accept="*/*" multiple>
             </label>
             <button type="button" @click="handleAddOCRFields" class="py-1 px-5 bg-gray-300 cursor-pointer hover:bg-gray-400 hover:text-white rounded-lg">Add OCR Fields</button>
-            <button type="button" class="py-1 px-5 bg-gray-300 cursor-pointer hover:bg-gray-400 hover:text-white rounded-lg">View Results</button>
             <button type="button" class="py-1 px-5 bg-gray-300 cursor-pointer hover:bg-gray-400 hover:text-white rounded-lg">Run OCR</button>
+            <button type="button" class="py-1 px-5 bg-gray-300 cursor-pointer hover:bg-gray-400 hover:text-white rounded-lg">View Results</button>
         </div>
         <div class="flex items-center justify-center gap-5">
             <button v-if="!props.hideReset && selectedFiles && selectedFiles.length > 0" @click="handleResetFiles" type="button" class="py-1 px-5 bg-gray-300 cursor-pointer hover:bg-gray-400 hover:text-white rounded-lg">Reset Uploaded Files</button>
@@ -40,7 +40,8 @@
     const props = defineProps({
         canUploadFiles: Boolean,
         showOcrEditor: Boolean,
-        hideReset: Boolean
+        hideReset: Boolean,
+        currentStep: Number
     });
 
     const selectedFiles = ref([]);
@@ -54,10 +55,14 @@
 
     //-------------------------------------Handle Upload Files---------------------------------------------
     const handleClickBeforeUpload = (event) => {
-        if (!props.canUploadFiles) {
+        if (props.currentStep !== 2) {
             event.preventDefault();
             Notiflix.Report.warning('Unable to upload file', 'Please upload Template first', 'OK');
         }
+        // if (!props.canUploadFiles) {
+        //     event.preventDefault();
+        //     Notiflix.Report.warning('Unable to upload file', 'Please upload Template first', 'OK');
+        // }
     }
 
     const handleUploadFiles = (event) => {
@@ -78,6 +83,14 @@
 
     //-------------------------------------Handle Add OCR Fields-------------------------------------------
     const handleAddOCRFields = () => {
+        if (props.currentStep !== 3) {
+            Notiflix.Report.warning(
+                'Cannot Add OCR Fields',
+                'You must Upload Files first!',
+                'OK'
+            );
+            return;
+        }
         emit('open-ocr-editor');
         emit('add-ocr-box');
     }

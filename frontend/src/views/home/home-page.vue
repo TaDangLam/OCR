@@ -12,8 +12,8 @@
 				@save-ocr-fields="handleSaveOCRFields"
 				@cancel-ocr-fields="handleCancelOCRFields"
 				:showOcrEditor="showOcrEditor"
-				:can-upload-files="canUploadFiles"
 				:hide-reset="hideResetFilesButton"
+				:currentStep="currentStep"
 			/>
 		</div>
 		<div class="flex gap-3 w-full">
@@ -48,20 +48,18 @@
 	import { Notiflix } from '@/libs/notiflix.js';
 	import { useMutation } from '@/libs/apollo-client.js';
 	import { CREATE_MANY_OCR_FIELDS } from '@/graphql/index.js';
-	const { accessToken } = useAuth();
 
     const router = useRouter();
-	const { clearAuth } = useAuth(); 
+	const { clearAuth, accessToken } = useAuth(); 
 	const templateFileLocal = ref(null);
-	// const canUploadTemplate = ref(true);
-	const canUploadFiles = ref(false);
-	// const canAddOcrFields = ref(false);
+
 	const uploadFiles = ref([]);
 	const showOcrEditor = ref(false);
 	const ocrBoxes = ref([]);
 	const hideResetFilesButton = ref(false);
 	const templateId = ref('');
 	const { mutate: createMany } = useMutation(CREATE_MANY_OCR_FIELDS);
+	const currentStep = ref(1);
 
 	const logout = () => {
 		clearAuth();
@@ -69,7 +67,7 @@
 	}
 
 	const handleCanUploadFiles = (event) => {
-		canUploadFiles.value = event;
+		currentStep.value = event;
 	}
 
 	const handleUploadFiles = (event) => {
@@ -157,6 +155,7 @@
 						}
 					);
 					showOcrEditor.value = false;
+					currentStep.value = 4
                     Notiflix.Loading.remove();
                     Notiflix.Notify.success('Save OCR Fields successfully!');
                 } catch (err) {
